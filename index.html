@@ -30,7 +30,12 @@
         <span class="brand-sub">Invoice Generator</span>
       </div>
     </div>
-    <div class="header-badge">Internal Tool</div>
+    <div class="header-right">
+      <button type="button" id="historyBtn" class="btn-history">
+        ⎙ History<span id="histBtnCount" class="hist-btn-count"></span>
+      </button>
+      <div class="header-badge">Internal Tool</div>
+    </div>
   </header>
 
   <!-- ── Main: two-panel grid ────────────────────── -->
@@ -187,6 +192,9 @@
           </button>
         </div>
 
+        <button type="button" id="nextInvoiceBtn" class="btn-next">
+          <span>→</span> Next Invoice
+        </button>
         <button type="button" id="clearFormBtn" class="btn-ghost">Clear Form</button>
       </div>
 
@@ -217,6 +225,28 @@
     </section>
 
   </main>
+</div>
+
+<!-- History backdrop -->
+<div id="historyBackdrop" class="history-backdrop"></div>
+
+<!-- History panel — slide-in from right -->
+<div id="historyPanel" class="history-panel">
+  <div class="history-head">
+    <div class="history-head-left">
+      <span class="history-title">Invoice History</span>
+      <span id="historyCount" class="history-count"></span>
+    </div>
+    <button type="button" id="closeHistoryBtn" class="btn-ghost btn-sm">✕ Close</button>
+  </div>
+  <div class="history-scroll">
+    <div id="historyList" class="history-list"></div>
+    <div id="historyEmpty" class="history-empty" hidden>
+      <div class="he-empty-icon">◈</div>
+      <p>No saved invoices yet.</p>
+      <p class="he-empty-sub">History saves automatically when you download a PDF or click Next Invoice.</p>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
