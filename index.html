@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TwinWaves · Invoice Generator</title>
+  <link rel="icon" type="image/png" href="logo-icon.png" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- CDN Libraries (synchronous — must load before app scripts) -->
+  <script src="https://unpkg.com/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/jspdf-autotable@5.0.8/dist/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.3/dist/signature_pad.umd.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Header ──────────────────────────────────── -->
+  <header id="app-header">
+    <div class="header-brand">
+      <img src="logo-icon.png" alt="" class="header-logo" onerror="this.style.display='none'" />
+      <div class="header-title">
+        <span class="brand-name">TWINWAVES</span>
+        <span class="brand-sub">Invoice Generator</span>
+      </div>
+    </div>
+    <div class="header-badge">Internal Tool</div>
+  </header>
+
+  <!-- ── Main: two-panel grid ────────────────────── -->
+  <main id="app-main">
+
+    <!-- ══════════════ LEFT: Form Panel ══════════════ -->
+    <aside id="form-panel">
+
+      <!-- Invoice Details -->
+      <section class="form-section">
+        <div class="section-label">Invoice Details</div>
+
+        <div class="field">
+          <label for="invoiceNum">Invoice Number</label>
+          <input type="text" id="invoiceNum" readonly class="mono" />
+        </div>
+
+        <div class="field-row two-col">
+          <div class="field">
+            <label for="invoiceDate">Issue Date</label>
+            <input type="date" id="invoiceDate" />
+          </div>
+          <div class="field">
+            <label for="dueDate">Due Date</label>
+            <input type="date" id="dueDate" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Client Details -->
+      <section class="form-section">
+        <div class="section-label">Client Details</div>
+
+        <div class="field">
+          <label for="clientBiz">Business Name</label>
+          <input type="text" id="clientBiz" placeholder="Acme Corp" autocomplete="organization" />
+        </div>
+
+        <div class="field-row two-col">
+          <div class="field">
+            <label for="contactName">Contact Name</label>
+            <input type="text" id="contactName" placeholder="John Doe" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="clientPhone">Phone</label>
+            <input type="tel" id="clientPhone" placeholder="+1 555 000 0000" autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="clientEmail">Email</label>
+          <input type="email" id="clientEmail" placeholder="client@company.com" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="clientAddress">Address</label>
+          <textarea id="clientAddress" rows="2" placeholder="123 Main St, City, State, ZIP"></textarea>
+        </div>
+      </section>
+
+      <!-- Service Plan -->
+      <section class="form-section">
+        <div class="section-label">Service Plan</div>
+
+        <div class="plan-grid">
+
+          <!-- Starter -->
+          <div class="plan-card" data-plan="starter" tabindex="0" role="radio" aria-checked="false" aria-label="Starter plan, $79 per month">
+            <div class="plan-card-inner">
+              <div class="plan-tier">STARTER</div>
+              <div class="plan-pricing">
+                <span class="plan-price">$79</span>
+                <span class="plan-period">/mo</span>
+              </div>
+              <ul class="plan-features">
+                <li>Missed-Call Text-Back</li>
+                <li>1 Business Number</li>
+                <li>Basic Setup</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Growth -->
+          <div class="plan-card" data-plan="growth" tabindex="0" role="radio" aria-checked="false" aria-label="Growth plan, $149 per month">
+            <div class="plan-badge-pill">POPULAR</div>
+            <div class="plan-card-inner">
+              <div class="plan-tier">GROWTH</div>
+              <div class="plan-pricing">
+                <span class="plan-price">$149</span>
+                <span class="plan-period">/mo</span>
+              </div>
+              <ul class="plan-features">
+                <li>Everything in Starter</li>
+                <li>Custom Message</li>
+                <li>Lead Capture</li>
+                <li>After-Hours Automation</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Custom -->
+          <div class="plan-card" data-plan="custom" tabindex="0" role="radio" aria-checked="false" aria-label="Custom plan with manual price">
+            <div class="plan-card-inner">
+              <div class="plan-tier">CUSTOM</div>
+              <div class="plan-pricing">
+                <span class="plan-price custom-price-display">—</span>
+                <span class="plan-period">/mo</span>
+              </div>
+              <p class="plan-description">Tailored solution for your workflow &amp; team.</p>
+              <div class="custom-price-wrapper" id="customPriceWrapper" hidden>
+                <label for="customPrice">Price (USD)</label>
+                <div class="custom-price-input-row">
+                  <span class="currency-prefix">$</span>
+                  <input type="number" id="customPrice" placeholder="0" min="0" step="1" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Notes -->
+      <section class="form-section">
+        <div class="section-label">Notes</div>
+        <div class="field">
+          <textarea id="notes" rows="3" placeholder="Additional context, terms, or setup details for this client…"></textarea>
+        </div>
+      </section>
+
+      <!-- Signature -->
+      <section class="form-section">
+        <div class="section-label">Authorized Signature</div>
+        <div class="sig-wrap">
+          <canvas id="sigCanvas" style="touch-action: none;"></canvas>
+          <span class="sig-hint">Sign here</span>
+        </div>
+        <button type="button" id="clearSigBtn" class="btn-ghost btn-sm">✕ Clear Signature</button>
+      </section>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button type="button" id="previewBtn" class="btn-primary">
+          <span class="btn-icon">◉</span>
+          <span class="btn-label">Preview PDF</span>
+        </button>
+
+        <div class="btn-row">
+          <button type="button" id="downloadDarkBtn" class="btn-secondary">
+            <span>↓</span> Dark PDF
+          </button>
+          <button type="button" id="downloadLightBtn" class="btn-light">
+            <span>↓</span> Light PDF
+          </button>
+        </div>
+
+        <button type="button" id="clearFormBtn" class="btn-ghost">Clear Form</button>
+      </div>
+
+    </aside>
+
+    <!-- ══════════════ RIGHT: Preview Panel ══════════════ -->
+    <section id="preview-panel">
+      <div class="preview-header">
+        <span class="preview-label">PDF Preview</span>
+        <span id="previewHint" class="preview-hint">Click "Preview PDF" to generate</span>
+      </div>
+
+      <div class="preview-frame-wrap">
+        <iframe id="pdfPreview" title="Invoice Preview"></iframe>
+
+        <div id="previewPlaceholder" class="preview-placeholder">
+          <div class="placeholder-icon">⬡</div>
+          <p class="placeholder-text">Invoice preview will appear here</p>
+        </div>
+
+        <div id="safariFallback" class="safari-fallback" hidden>
+          <p>PDF preview isn't supported in this browser.</p>
+          <a id="pdfFallbackLink" href="#" target="_blank" rel="noopener" class="btn-primary btn-inline-sm">
+            Open PDF ↗
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- App scripts — load order matters -->
+<script src="js/config.js"></script>
+<script src="js/invoice-counter.js"></script>
+<script src="js/sig-manager.js"></script>
+<script src="js/pdf-generator.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
