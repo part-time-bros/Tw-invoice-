@@ -53,7 +53,7 @@ const TW = Object.freeze({
 
   paymentTerms: [
     'Payment due within 7 days of invoice date.',
-    'Accepted: Bank Transfer  ·  UPI  ·  NEFT / RTGS',
+    'Accepted: Bank Transfer  ·  PayPal  ·  ACH / Wire Transfer',
   ],
 
   logos: {
